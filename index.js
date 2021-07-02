@@ -22,7 +22,9 @@ client.connect();
 
 client.on("connected", (address, port) => {
   // client.action(channel, "The bot has connected on" + address + ":" + port);
-  client.action(channel, "Hello 🤖");
+  client.action(channel, "Hello 🤖").catch((err) => {
+    console.log(err);
+  });
 });
 
 client.on("chat", (channel, user, message, self) => {
