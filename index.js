@@ -29,16 +29,15 @@ client.on("connected", (address, port) => {
 
 client.on("chat", (channel, user, message, self) => {
   if (self) return;
-  if (message == "!cd") {
-    let time = 5;
-    let announce = (count) => {
-      let val = count ? count : `Go!`,
-        preText = time === count ? `Starting Countdown... ` : ``;
-      client.say(channel, `${preText}${val}`);
-      setTimeout(() => {
-        if (count) announce(count - 1);
-      }, 1000);
-    };
-    announce(time);
+  if (message.indexOf("!auction") === 0) {
+    client.say(
+      channel,
+      "Jawnzun's artwork is for sale and the proceeds go to a great cause"
+    );
+    return;
+  }
+  if (message.indexOf("!bid") === 0) {
+    client.say(channel, "starts with !bid");
+    return;
   }
 });

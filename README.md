@@ -1,2 +1,1 @@
-# basic_twitch_bot
-# basic_twitch_bot
+# Auction Bot on Twitch
