@@ -11,6 +11,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.21.0",
+    "aws-sdk": "^2.943.0",
     "tmi.js": "^1.8.3"
   }
 }
