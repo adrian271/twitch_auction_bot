@@ -73,7 +73,7 @@ client.connect()
 
 client.on('connected', (address, port) => {
   // client.action(channel, "The bot has connected on" + address + ":" + port);
-  client.action(channel, 'Hello 🤖').catch((err) => {
+  client.action(channel, '👋 🤖 Hello').catch((err) => {
     console.log(err)
   })
 })
@@ -109,7 +109,7 @@ client.on('chat', (channel, user, message, self) => {
         } else {
           client.say(
             channel,
-            `Woah 🛑 The hightest bid is currently
+            `🤖 Woah 🛑 The hightest bid is currently
             $${highestBid.toFixed(2)},
             by ${highestBidder}, gotta bid higher`
           )
@@ -130,11 +130,14 @@ client.on('chat', (channel, user, message, self) => {
         })
         .promise()
         .then((data) => {
+          let bidStr = bid.toFixed(2).toString().replace('.', '')
+          let extra =
+            bidStr.includes('69') || bidStr.includes('420') ? ` 😉 Nice` : ``
           client.say(
             channel,
-            `Congrats ${user},
+            `🎉 Congrats ${user},
             you're now the highest bidder at
-            $${bid.toFixed(2)} USD`
+            $${bid.toFixed(2)} USD${extra}`
           )
         })
         .catch(console.error)
