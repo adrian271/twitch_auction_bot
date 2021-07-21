@@ -23,7 +23,7 @@
     </div>
     <script>
       let getBid = () => {
-        fetch('http://localhost:3369/data')
+        fetch('/data')
           .then((response) => response.json())
           .then((data) => {
             console.log(data)
