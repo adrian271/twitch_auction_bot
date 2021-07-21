@@ -1,31 +1,20 @@
-var tmi = require('tmi.js')
-var channel = process.env.TWITCH_ACCOUNT
+let tmi = require('tmi.js')
+let channel = process.env.TWITCH_ACCOUNT
+let express = require('express')
+let path = require('path')
+
+let app = express()
+let cors = require('cors')
+let bodyParser = require('body-parser')
+app.use(cors())
+app.use(bodyParser.urlencoded({ extended: true }))
+app.use(bodyParser.json())
+app.use(express.static('public'))
 
 const AWS = require('aws-sdk')
 const dynamoDB = new AWS.DynamoDB.DocumentClient({ region: 'us-west-2' })
 
-let randomName = [
-  'Michael Scott',
-  'Dwight Schrute',
-  'Jim Halpert',
-  'Pam Beesly',
-  'Ryan Howard',
-  'Andy Bernard',
-  'Robert California',
-  'Roy Anderson',
-  'Jan Levinson',
-  'Stanley Hudson',
-  'Kevin Malone',
-  'Meredith Palmer',
-  'Angela Martin',
-  'Oscar Martinez',
-  'Phyllis Vance',
-  'Toby Flenderson',
-  'Kelly Kapoor',
-  'Creed Bratto'
-]
-
-var config = {
+let config = {
   options: {
     debug: true
   },
@@ -34,14 +23,52 @@ var config = {
     reconnect: true
   },
   identity: {
-    username: process.env.TWITCH_ACCOUNT,
+    username: 'aucto_bot',
     // get yours at http://twitchapps.com/tmi
     password: process.env.TWITCH_TMI_TOKEN
   },
   channels: [channel]
 }
 
-var client = new tmi.client(config)
+/* Express Serve */
+app.get('/', (req, res) => {
+  console.log(`Request: ${req.method} ${req.url}`)
+  res.sendFile(path.join(__dirname, './index.html'))
+})
+
+/* */
+
+/* AJAX Routing */
+app.get('/data', (req, res) => {
+  console.log(`Request: ${req.method} ${req.url}`)
+  dynamoDB
+    .scan({
+      TableName: 'bids'
+    })
+    .promise()
+    .then((data) => {
+      let sortedData = data.Items.sort((a, b) => (a.bid > b.bid ? 1 : -1))
+      let highestBid = sortedData[sortedData.length - 1].bid
+      let highestBidder = sortedData[sortedData.length - 1].user
+      res.status(200).send({
+        highestBid,
+        highestBidder
+      })
+    })
+    .catch(console.error)
+})
+
+let port = process.env.PORT || 3369
+app.listen(port, () => {
+  console.clear()
+  console.log(`API server started on port ${port}`)
+})
+
+/**/
+
+/* Bot Functionality */
+
+let client = new tmi.client(config)
 client.connect()
 
 client.on('connected', (address, port) => {
@@ -63,11 +90,9 @@ client.on('chat', (channel, user, message, self) => {
 
   if (message.indexOf('!bid') === 0) {
     let msgArr = message.split(' ')
-    // let user = randomName[Math.floor(Math.random() * randomName.length)]
-    user = user.username
-    console.log(user.username)
-    let bid = Number(msgArr[1])
-    client.say(channel, '**** placing bid ****')
+    displayName = user['display-name']
+    let rawBid = msgArr[1].match(/(\d+)/)[0]
+    let bid = Math.floor(Number(rawBid) * 100) / 100
     dynamoDB
       .scan({
         TableName: 'bids'
@@ -78,13 +103,15 @@ client.on('chat', (channel, user, message, self) => {
         let highestBid = sortedData[sortedData.length - 1].bid
         let highestBidder = sortedData[sortedData.length - 1].user
         console.log(sortedData)
-        console.log('hightestBid', highestBid)
+        console.log('highestBid', highestBid)
         if (bid > highestBid) {
-          postBid(bid, user)
+          postBid(bid, displayName)
         } else {
           client.say(
             channel,
-            `The hightest bid is currently $${highestBid}, by ${highestBidder}`
+            `Woah 🛑 The hightest bid is currently
+            $${highestBid.toFixed(2)},
+            by ${highestBidder}, gotta bid higher`
           )
         }
       })
@@ -105,7 +132,9 @@ client.on('chat', (channel, user, message, self) => {
         .then((data) => {
           client.say(
             channel,
-            `Congrats ${user}, you're now the highest bidder at $${bid} USD`
+            `Congrats ${user},
+            you're now the highest bidder at
+            $${bid.toFixed(2)} USD`
           )
         })
         .catch(console.error)
@@ -114,3 +143,9 @@ client.on('chat', (channel, user, message, self) => {
     }
   }
 })
+
+//// TODO:
+// need instructions
+// !highestbid
+// auction start
+//auction interval reminders

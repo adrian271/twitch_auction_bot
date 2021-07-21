@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8" />
+    <title>Auction Layout</title>
+    <style>
+      @font-face {
+        font-family: '8bit';
+        src: url('./8bit.ttf') format('truetype'); /* Safari, Android, iOS */
+      }
+
+      html,
+      body {
+        background: rgba(255, 255, 255, 0);
+        font-family: '8bit', monospace;
+      }
+    </style>
+  </head>
+  <body>
+    <div>
+      <span id="bid"></span>
+      <span id="bidder"></span>
+    </div>
+    <script>
+      let getBid = () => {
+        fetch('http://localhost:3369/data')
+          .then((response) => response.json())
+          .then((data) => {
+            console.log(data)
+            document.querySelector('#bid').innerText = data.highestBid.toFixed(
+              2
+            )
+            document.querySelector('#bidder').innerText = data.highestBidder
+          })
+          .catch((err) => console.log(err))
+        setTimeout(getBid, 10 * 1000)
+      }
+      getBid()
+    </script>
+  </body>
+</html>
