@@ -91,7 +91,7 @@ client.on('chat', (channel, user, message, self) => {
   if (message.indexOf('!bid') === 0) {
     let msgArr = message.split(' ')
     displayName = user['display-name']
-    let rawBid = msgArr[1].match(/(\d+)/)[0]
+    let rawBid = msgArr[1].replace('$', '')
     let bid = Math.floor(Number(rawBid) * 100) / 100
     dynamoDB
       .scan({
