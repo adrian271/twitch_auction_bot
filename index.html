@@ -13,13 +13,14 @@
       body {
         background: rgba(255, 255, 255, 0);
         font-family: '8bit', monospace;
+        font-size: 48px;
+        color: white;
       }
     </style>
   </head>
   <body>
     <div>
       <span id="bid"></span>
-      <span id="bidder"></span>
     </div>
     <script>
       let getBid = () => {
@@ -27,10 +28,10 @@
           .then((response) => response.json())
           .then((data) => {
             console.log(data)
-            document.querySelector('#bid').innerText = data.highestBid.toFixed(
-              2
-            )
-            document.querySelector('#bidder').innerText = data.highestBidder
+            let bid = data.highestBid.toFixed(2)
+            let bidder = data.highestBidder
+            let str = `${bidder} has bid $${bid} to Marco's Mark, thank you!`
+            document.querySelector('#bid').innerText = str
           })
           .catch((err) => console.log(err))
         setTimeout(getBid, 10 * 1000)
