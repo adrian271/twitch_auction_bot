@@ -30,7 +30,10 @@
             console.log(data)
             let bid = data.highestBid.toFixed(2)
             let bidder = data.highestBidder
-            let str = `${bidder} has bid $${bid} to Marco's Mark, thank you!`
+            let str =
+              data.highestBid === 0
+                ? `We need our first bid, will it  be you?`
+                : `${bidder} has bid $${bid} to Marco's Mark, thank you!`
             document.querySelector('#bid').innerText = str
           })
           .catch((err) => console.log(err))

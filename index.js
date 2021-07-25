@@ -80,13 +80,13 @@ client.on('connected', (address, port) => {
 
 client.on('chat', (channel, user, message, self) => {
   if (self) return
-  if (message.indexOf('!auction') === 0) {
-    client.say(
-      channel,
-      "Jawnzun's artwork is for sale and the proceeds go to a great cause"
-    )
-    return
-  }
+  // if (message.indexOf('!auction') === 0) {
+  //   client.say(
+  //     channel,
+  //     "Jawnzun's artwork is for sale and the proceeds go to a great cause"
+  //   )
+  //   return
+  // }
 
   if (message.indexOf('!bid') === 0) {
     let msgArr = message.split(' ')
